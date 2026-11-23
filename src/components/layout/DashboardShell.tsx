@@ -1,11 +1,30 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { signOut, useAuthProfileReady } from 'deepspace'
-import { Activity, LayoutDashboard, ListOrdered, LogOut, Settings, Users } from 'lucide-react'
+import {
+  Activity,
+  ChevronUp,
+  LayoutDashboard,
+  ListOrdered,
+  LogOut,
+  Settings,
+  Users,
+} from 'lucide-react'
 import { useState } from 'react'
 import { StaffAuthOverlay } from '@/components/auth/StaffAuthOverlay'
 import { APP_NAME } from '../../constants'
 import { cn } from '../../lib/utils'
-import { Avatar, AvatarFallback, AvatarImage, Button } from '../ui'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../ui'
 
 const items = [
   { to: '/dashboard', label: 'Today', icon: LayoutDashboard, end: true },
@@ -52,25 +71,14 @@ export function DashboardShell() {
 
         <div className="shrink-0 border-t border-border p-3">
           {isSignedIn && user ? (
-            <div className="flex items-center gap-2 rounded-md px-2 py-2">
-              <Avatar className="size-7">
-                <AvatarImage src={user.imageUrl ?? undefined} referrerPolicy="no-referrer" />
-                <AvatarFallback className="text-[10px]">
-                  {(user.name?.[0] ?? user.email?.[0] ?? '?').toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-xs font-medium">{user.name || user.email}</p>
-                <button
-                  type="button"
-                  onClick={() => signOut()}
-                  className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
-                >
-                  <LogOut className="size-3" aria-hidden />
-                  Sign out
-                </button>
-              </div>
-            </div>
+            <AccountMenu
+              name={user.name}
+              email={user.email}
+              imageUrl={user.imageUrl}
+              side="top"
+              align="start"
+              triggerClassName="w-full"
+            />
           ) : (
             <Button size="sm" className="w-full" onClick={() => setShowAuth(true)}>
               Sign in
@@ -84,14 +92,15 @@ export function DashboardShell() {
           <Link to="/dashboard" className="font-display font-semibold">
             {APP_NAME}
           </Link>
-          {isSignedIn ? (
-            <button
-              type="button"
-              onClick={() => signOut()}
-              className="text-xs text-muted-foreground"
-            >
-              Sign out
-            </button>
+          {isSignedIn && user ? (
+            <AccountMenu
+              name={user.name}
+              email={user.email}
+              imageUrl={user.imageUrl}
+              side="bottom"
+              align="end"
+              compact
+            />
           ) : null}
         </div>
 
@@ -120,5 +129,79 @@ export function DashboardShell() {
 
       {showAuth ? <StaffAuthOverlay onClose={() => setShowAuth(false)} /> : null}
     </div>
+  )
+}
+
+function AccountMenu({
+  name,
+  email,
+  imageUrl,
+  side,
+  align,
+  compact = false,
+  triggerClassName,
+}: {
+  name?: string | null
+  email?: string | null
+  imageUrl?: string | null
+  side: 'top' | 'bottom'
+  align: 'start' | 'end'
+  compact?: boolean
+  triggerClassName?: string
+}) {
+  const label = name || email || 'Account'
+  const initial = (name?.[0] ?? email?.[0] ?? '?').toUpperCase()
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <button
+            type="button"
+            aria-label="Account menu"
+            className={cn(
+              'group flex items-center gap-2 rounded-md border border-transparent text-left transition-colors hover:border-border hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+              compact ? 'p-0.5' : 'w-full px-2 py-2',
+              triggerClassName,
+            )}
+          >
+            <Avatar className={cn(compact ? 'size-8' : 'size-7')}>
+              <AvatarImage src={imageUrl ?? undefined} referrerPolicy="no-referrer" />
+              <AvatarFallback className="text-[10px]">{initial}</AvatarFallback>
+            </Avatar>
+            {!compact ? (
+              <>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-xs font-medium">{label}</p>
+                  <p className="truncate text-[11px] text-muted-foreground">Account</p>
+                </div>
+                <ChevronUp
+                  className="size-3.5 shrink-0 text-muted-foreground transition-transform duration-150 group-data-[popup-open]:rotate-180"
+                  aria-hidden
+                />
+              </>
+            ) : null}
+          </button>
+        }
+      />
+      <DropdownMenuContent side={side} align={align} className="w-56">
+        <DropdownMenuLabel>
+          <div className="truncate font-medium text-foreground">{name || 'Signed in'}</div>
+          {email ? (
+            <div className="truncate text-xs font-normal text-muted-foreground">{email}</div>
+          ) : null}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={() => {
+            void signOut()
+          }}
+        >
+          <LogOut aria-hidden />
+          Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
