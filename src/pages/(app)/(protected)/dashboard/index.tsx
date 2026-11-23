@@ -1,0 +1,116 @@
+import { useMemo } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useQuery } from 'deepspace'
+import { buttonVariants } from '@/components/ui'
+import { useMyBusiness } from '@/hooks/useMyBusiness'
+import { cn } from '@/lib/utils'
+import { queueDayKey, snapshotRecordId } from '@/lib/queue'
+import type { QueueSnapshot, Ticket } from '@/types/queue'
+
+export default function DashboardOverviewPage() {
+  const navigate = useNavigate()
+  const { business, loading, error } = useMyBusiness()
+  const today = queueDayKey()
+
+  const { records: snapshots } = useQuery<QueueSnapshot>('queue_snapshots', {
+    where: { businessId: business?.id ?? '__none__' },
+    limit: 1,
+  })
+  const { records: tickets } = useQuery<Ticket>('tickets', {
+    where: { businessId: business?.id ?? '__none__' },
+    limit: 200,
+  })
+
+  const snapshot =
+    business && snapshots.find((r) => r.recordId === snapshotRecordId(business.id))?.data
+
+  const completedToday = useMemo(
+    () =>
+      tickets.filter((t) => t.data.status === 'completed' && t.data.queueDay === today).length,
+    [tickets, today],
+  )
+
+  const waiting =
+    snapshot?.waitingCount ?? tickets.filter((t) => t.data.status === 'waiting').length
+  const servingNumber =
+    snapshot?.servingTicketNumber ??
+    tickets.find((t) => t.data.status === 'serving')?.data.ticketNumber ??
+    0
+
+  return (
+    <div className="mx-auto max-w-5xl space-y-8">
+      <header>
+        <h1 className="font-display text-3xl font-semibold tracking-tight">Today</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {business ? business.name : 'Your floor at a glance'}
+        </p>
+      </header>
+
+      {loading ? (
+        <div className="grid gap-3 sm:grid-cols-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-24 animate-pulse rounded-lg bg-muted" />
+          ))}
+        </div>
+      ) : error ? (
+        <p className="text-sm text-destructive">{error}</p>
+      ) : !business ? (
+        <div className="rounded-lg border border-dashed border-border px-6 py-16 text-center">
+          <p className="font-display text-lg font-semibold">Create your shop</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            One profile unlocks the public queue link and staff console.
+          </p>
+          <button
+            type="button"
+            className={cn(buttonVariants(), 'mt-5')}
+            onClick={() => navigate('/dashboard/settings')}
+          >
+            Get started
+          </button>
+        </div>
+      ) : (
+        <>
+          <section className="grid gap-3 sm:grid-cols-3">
+            <Stat label="Waiting" value={String(waiting)} />
+            <Stat label="In service" value={servingNumber > 0 ? `#${servingNumber}` : '—'} />
+            <Stat label="Completed today" value={String(completedToday)} />
+          </section>
+
+          <div className="flex flex-wrap items-center gap-4 text-sm">
+            <span className={business.isOpen ? 'text-success' : 'text-destructive'}>
+              {business.isOpen ? 'Accepting walk-ins' : 'Closed to new joins'}
+            </span>
+            <span className="text-muted-foreground">
+              ~{business.averageServiceMinutes} min average cut
+            </span>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <Link to="/dashboard/queue" className={cn(buttonVariants({ size: 'lg' }))}>
+              Open queue
+            </Link>
+            <Link
+              to={`/queue/${business.slug}`}
+              target="_blank"
+              rel="noreferrer"
+              className={cn(buttonVariants({ variant: 'outline', size: 'lg' }))}
+            >
+              Guest page
+            </Link>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-border bg-card px-4 py-5">
+      <p className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+        {label}
+      </p>
+      <p className="font-display mt-2 text-3xl font-semibold tabular-nums">{value}</p>
+    </div>
+  )
+}
