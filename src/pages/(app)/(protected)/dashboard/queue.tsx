@@ -1,13 +1,15 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { QueueBoard } from '@/components/dashboard/QueueBoard'
+import { BusinessSettingsModal } from '@/components/forms/BusinessSettingsModal'
 import { EmptyShopState } from '@/components/illustrations/EmptyShopState'
 import { buttonVariants } from '@/components/ui'
 import { useMyBusiness } from '@/hooks/useMyBusiness'
 import { cn } from '@/lib/utils'
 
 export default function DashboardQueuePage() {
-  const navigate = useNavigate()
-  const { business, membership, loading, error } = useMyBusiness()
+  const { business, membership, loading, error, refresh } = useMyBusiness()
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   return (
     <div className="mx-auto max-w-6xl space-y-5">
@@ -31,8 +33,8 @@ export default function DashboardQueuePage() {
         <EmptyShopState
           title="Set up your shop first"
           description="Create a business profile, then guests can join from their phones while you run the live queue."
-          actionLabel="Business settings"
-          onAction={() => navigate('/dashboard/settings')}
+          actionLabel="Create shop"
+          onAction={() => setSettingsOpen(true)}
         />
       ) : (
         <QueueBoard
@@ -42,14 +44,20 @@ export default function DashboardQueuePage() {
         />
       )}
 
-      {business && (
+      {business ? (
         <Link
           to="/dashboard/settings"
           className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'inline-flex')}
         >
           Settings
         </Link>
-      )}
+      ) : null}
+
+      <BusinessSettingsModal
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        onSaved={() => void refresh()}
+      />
     </div>
   )
 }

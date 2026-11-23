@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useQuery, toConnectionStatus } from 'deepspace'
 import { APP_NAME } from '../../../constants'
-import { JoinQueueForm } from '../../../components/queue/JoinQueueForm'
+import { JoinQueueModal } from '@/components/forms/JoinQueueModal'
 import { ConnectionBanner } from '../../../components/queue/ConnectionBanner'
 import { callPublicQueue } from '../../../lib/actions'
 import { snapshotRecordId } from '../../../lib/queue'
 import type { QueueSnapshot } from '../../../types/queue'
-import { buttonVariants } from '@/components/ui'
+import { Button, buttonVariants } from '@/components/ui'
 import { cn } from '@/lib/utils'
 
 type PublicBusiness = {
@@ -37,6 +37,7 @@ export default function PublicQueuePage() {
   const [payload, setPayload] = useState<PublicPayload | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [joinOpen, setJoinOpen] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -133,8 +134,8 @@ export default function PublicQueuePage() {
               />
             </div>
 
-            <div>
-              <div className="mb-3 flex items-center justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
                 <h2 className="font-display text-sm font-semibold">Join the line</h2>
                 <span
                   className={cn(
@@ -145,12 +146,18 @@ export default function PublicQueuePage() {
                   {isOpen ? 'Open' : 'Closed'}
                 </span>
               </div>
-              <JoinQueueForm
-                slug={slug}
-                disabled={!isOpen}
-                disabledReason="This shop isn’t taking walk-ins right now."
-              />
+              {isOpen ? (
+                <Button className="w-full" size="lg" onClick={() => setJoinOpen(true)}>
+                  Take a ticket
+                </Button>
+              ) : (
+                <div className="rounded-md border border-border bg-muted/40 px-4 py-6 text-center text-sm text-muted-foreground">
+                  This shop isn’t taking walk-ins right now.
+                </div>
+              )}
             </div>
+
+            <JoinQueueModal open={joinOpen} onClose={() => setJoinOpen(false)} slug={slug} />
           </>
         ) : null}
       </div>

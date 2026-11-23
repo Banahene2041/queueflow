@@ -1,6 +1,7 @@
-import { useMemo } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useQuery } from 'deepspace'
+import { BusinessSettingsModal } from '@/components/forms/BusinessSettingsModal'
 import { EmptyShopState } from '@/components/illustrations/EmptyShopState'
 import { buttonVariants } from '@/components/ui'
 import { useMyBusiness } from '@/hooks/useMyBusiness'
@@ -9,8 +10,8 @@ import { queueDayKey, snapshotRecordId } from '@/lib/queue'
 import type { QueueSnapshot, Ticket } from '@/types/queue'
 
 export default function DashboardOverviewPage() {
-  const navigate = useNavigate()
-  const { business, loading, error } = useMyBusiness()
+  const { business, loading, error, refresh } = useMyBusiness()
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const today = queueDayKey()
 
   const { records: snapshots } = useQuery<QueueSnapshot>('queue_snapshots', {
@@ -60,7 +61,7 @@ export default function DashboardOverviewPage() {
           title="Create your shop"
           description="One profile unlocks the public queue link and staff console. Guests join from their phone — you run the floor."
           actionLabel="Get started"
-          onAction={() => navigate('/dashboard/settings')}
+          onAction={() => setSettingsOpen(true)}
         />
       ) : (
         <>
@@ -94,6 +95,12 @@ export default function DashboardOverviewPage() {
           </div>
         </>
       )}
+
+      <BusinessSettingsModal
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        onSaved={() => void refresh()}
+      />
     </div>
   )
 }

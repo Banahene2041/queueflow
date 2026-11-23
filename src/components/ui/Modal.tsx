@@ -46,7 +46,7 @@ export function Modal({
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
       <DialogContent
         aria-describedby={undefined}
-        className={cn(sizes[size], 'flex flex-col max-h-[85vh]', className)}
+        className={cn(sizes[size], 'flex max-h-[85vh] flex-col overflow-hidden', className)}
         {...props}
       >
         {children}
@@ -66,7 +66,7 @@ interface ModalHeaderProps {
 
 function ModalHeader({ children, className = '' }: ModalHeaderProps): JSX.Element {
   return (
-    <DHeader className={className}>
+    <DHeader className={cn('border-b border-border px-5 py-4 pr-12', className)}>
       {children}
     </DHeader>
   )
@@ -124,7 +124,7 @@ function ModalBody({ children, className = '' }: ModalBodyProps): JSX.Element {
   // align with Header / Footer. break-words keeps long unbroken strings
   // (filenames, URLs) from forcing horizontal overflow.
   return (
-    <div className={cn('flex-1 overflow-y-auto -mx-1 px-1 py-4 break-words', className)}>
+    <div className={cn('flex-1 overflow-y-auto break-words px-5 py-4', className)}>
       {children}
     </div>
   )
@@ -141,7 +141,7 @@ interface ModalFooterProps {
 
 function ModalFooter({ children, className = '' }: ModalFooterProps): JSX.Element {
   return (
-    <DFooter className={className}>
+    <DFooter className={cn('border-t border-border px-5 py-3', className)}>
       {children}
     </DFooter>
   )
