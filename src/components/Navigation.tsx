@@ -10,7 +10,8 @@
 
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { AuthOverlay, useAuthProfileReady, signOut } from 'deepspace'
+import { useAuthProfileReady, signOut } from 'deepspace'
+import { StaffAuthOverlay } from '@/components/auth/StaffAuthOverlay'
 import { ChevronDown, LogOut, Menu, X } from 'lucide-react'
 import { APP_NAME } from '../constants'
 import type { Role } from '../constants'
@@ -159,7 +160,7 @@ export default function Navigation() {
         )}
       </nav>
 
-      {showAuthModal && <AuthOverlay onClose={() => setShowAuthModal(false)} />}
+      {showAuthModal ? <StaffAuthOverlay onClose={() => setShowAuthModal(false)} /> : null}
     </>
   )
 }

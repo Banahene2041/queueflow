@@ -1,69 +1,112 @@
 /* home pattern: data-forward — jump straight into today's floor console */
 import { Link } from 'react-router-dom'
 import { useAuthProfileReady } from 'deepspace'
+import { ArrowRight, ListOrdered, Settings2 } from 'lucide-react'
 import { HomeFloorPreview } from '@/components/illustrations/HomeFloorPreview'
+import { useMyBusiness } from '@/hooks/useMyBusiness'
 import { APP_NAME } from '../../../constants'
 import { buttonVariants } from '@/components/ui'
 import { cn } from '@/lib/utils'
 
 export default function HomePage() {
   const { user } = useAuthProfileReady({ requireUser: true })
+  const { business, loading } = useMyBusiness()
   const firstName = user?.name?.split(' ')[0]
 
   return (
-    <div className="relative mx-auto min-h-full max-w-5xl overflow-hidden px-6 py-12 sm:py-16">
-      <div className="pointer-events-none absolute -right-24 top-0 size-72 rounded-full bg-teal-500/10 blur-3xl" />
-      <div className="pointer-events-none absolute -left-20 bottom-10 size-64 rounded-full bg-cyan-600/10 blur-3xl" />
-
-      <div className="relative grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-        <div className="qf-fade-up">
-          <p className="font-display text-sm font-semibold tracking-[0.18em] text-primary uppercase">
+    <div className="mx-auto max-w-5xl px-6 py-10 sm:py-14">
+      <div className="grid items-start gap-10 lg:grid-cols-[1fr_1fr] lg:gap-14">
+        <div>
+          <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
             {APP_NAME}
           </p>
-          <h1 className="font-display mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">
+          <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
             {firstName ? `Hi, ${firstName}` : 'Floor console'}
           </h1>
-          <p className="mt-3 max-w-md text-muted-foreground">
-            Open today’s queue, call the next guest, and keep every chair in sync —
-            live across every station.
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
+            {business
+              ? `You’re signed in for ${business.name}. Open today to run the live queue.`
+              : 'Open the floor console to create your shop and start taking walk-ins.'}
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+
+          {!loading && business ? (
+            <p className="mt-4 text-sm">
+              <span
+                className={cn(
+                  'font-medium',
+                  business.isOpen ? 'text-success' : 'text-destructive',
+                )}
+              >
+                {business.isOpen ? 'Accepting walk-ins' : 'Closed to new joins'}
+              </span>
+              <span className="text-muted-foreground">
+                {' '}
+                · ~{business.averageServiceMinutes} min average
+              </span>
+            </p>
+          ) : null}
+
+          <div className="mt-7 flex flex-wrap gap-3">
             <Link to="/dashboard" className={cn(buttonVariants({ size: 'lg' }))}>
               Go to today
+              <ArrowRight className="size-4 opacity-70" aria-hidden />
             </Link>
             <Link
-              to="/dashboard/queue"
+              to={business ? '/dashboard/queue' : '/dashboard/settings'}
               className={cn(buttonVariants({ variant: 'outline', size: 'lg' }))}
             >
-              Open queue
+              {business ? 'Open queue' : 'Set up shop'}
             </Link>
           </div>
 
-          <ul className="mt-10 grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
-            {[
-              { label: 'Live tickets', hint: 'Syncs in seconds' },
-              { label: 'Staff presence', hint: 'Who’s on the floor' },
-              { label: 'Guest link', hint: 'Phone-first join' },
-            ].map((item, i) => (
-              <li
-                key={item.label}
-                className={cn(
-                  'qf-fade-up rounded-lg border border-border/80 bg-card/60 px-3 py-3',
-                  i === 1 && 'qf-fade-up-delay',
-                  i === 2 && 'qf-fade-up-delay-2',
-                )}
-              >
-                <p className="font-medium text-foreground">{item.label}</p>
-                <p className="mt-0.5 text-xs">{item.hint}</p>
-              </li>
-            ))}
+          <ul className="mt-10 divide-y divide-border border-y border-border">
+            <QuickLink
+              to="/dashboard/queue"
+              icon={ListOrdered}
+              label="Queue board"
+              hint="Call next and move tickets"
+            />
+            <QuickLink
+              to="/dashboard/settings"
+              icon={Settings2}
+              label="Shop settings"
+              hint="Hours, slug, and guest link"
+            />
           </ul>
         </div>
 
-        <div className="qf-fade-up qf-fade-up-delay qf-float">
+        <div className="lg:pt-2">
           <HomeFloorPreview />
         </div>
       </div>
     </div>
+  )
+}
+
+function QuickLink({
+  to,
+  icon: Icon,
+  label,
+  hint,
+}: {
+  to: string
+  icon: typeof ListOrdered
+  label: string
+  hint: string
+}) {
+  return (
+    <li>
+      <Link
+        to={to}
+        className="flex items-center gap-3 py-3.5 transition-colors hover:text-foreground"
+      >
+        <Icon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-medium text-foreground">{label}</span>
+          <span className="block text-xs text-muted-foreground">{hint}</span>
+        </span>
+        <ArrowRight className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+      </Link>
+    </li>
   )
 }

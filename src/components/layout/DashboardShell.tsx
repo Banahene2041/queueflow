@@ -1,7 +1,8 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
-import { AuthOverlay, signOut, useAuthProfileReady } from 'deepspace'
+import { signOut, useAuthProfileReady } from 'deepspace'
 import { Activity, LayoutDashboard, ListOrdered, LogOut, Settings, Users } from 'lucide-react'
 import { useState } from 'react'
+import { StaffAuthOverlay } from '@/components/auth/StaffAuthOverlay'
 import { APP_NAME } from '../../constants'
 import { cn } from '../../lib/utils'
 import { Avatar, AvatarFallback, AvatarImage, Button } from '../ui'
@@ -19,15 +20,16 @@ export function DashboardShell() {
   const [showAuth, setShowAuth] = useState(false)
 
   return (
-    <div className="flex min-h-full bg-shell text-foreground">
-      <aside className="hidden w-[220px] shrink-0 flex-col border-r border-border bg-shell-panel md:flex">
-        <div className="px-5 py-5">
+    <div className="flex h-full min-h-0 overflow-hidden bg-shell text-foreground">
+      <aside className="hidden h-full w-[220px] shrink-0 flex-col border-r border-border bg-shell-panel md:flex">
+        <div className="shrink-0 px-5 py-5">
           <Link to="/dashboard" className="font-display text-lg font-semibold tracking-tight">
             {APP_NAME}
           </Link>
           <p className="mt-1 text-xs text-muted-foreground">Floor console</p>
         </div>
-        <nav className="flex flex-1 flex-col gap-0.5 px-3">
+
+        <nav className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-3 pb-3">
           {items.map((item) => (
             <NavLink
               key={item.to}
@@ -47,7 +49,8 @@ export function DashboardShell() {
             </NavLink>
           ))}
         </nav>
-        <div className="border-t border-border p-3">
+
+        <div className="shrink-0 border-t border-border p-3">
           {isSignedIn && user ? (
             <div className="flex items-center gap-2 rounded-md px-2 py-2">
               <Avatar className="size-7">
@@ -76,12 +79,12 @@ export function DashboardShell() {
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <div className="flex items-center justify-between border-b border-border bg-shell-panel px-4 py-3 md:hidden">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        <div className="flex shrink-0 items-center justify-between border-b border-border bg-shell-panel px-4 py-3 md:hidden">
           <Link to="/dashboard" className="font-display font-semibold">
             {APP_NAME}
           </Link>
-          {isSignedIn && (
+          {isSignedIn ? (
             <button
               type="button"
               onClick={() => signOut()}
@@ -89,9 +92,10 @@ export function DashboardShell() {
             >
               Sign out
             </button>
-          )}
+          ) : null}
         </div>
-        <div className="flex gap-1 overflow-x-auto border-b border-border bg-shell-panel px-2 py-2 md:hidden">
+
+        <div className="flex shrink-0 gap-1 overflow-x-auto border-b border-border bg-shell-panel px-2 py-2 md:hidden">
           {items.map((item) => (
             <NavLink
               key={item.to}
@@ -108,12 +112,13 @@ export function DashboardShell() {
             </NavLink>
           ))}
         </div>
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 lg:p-8">
           <Outlet />
         </div>
       </div>
 
-      {showAuth && <AuthOverlay onClose={() => setShowAuth(false)} />}
+      {showAuth ? <StaffAuthOverlay onClose={() => setShowAuth(false)} /> : null}
     </div>
   )
 }

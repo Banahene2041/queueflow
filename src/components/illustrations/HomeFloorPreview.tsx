@@ -18,18 +18,18 @@ export function HomeFloorPreview() {
   }, [])
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-[0_20px_50px_rgba(18,24,26,0.08)]">
+    <div className="relative overflow-hidden rounded-lg border border-border bg-card">
       <img
         src="/illustrations/home-queue.jpg"
         alt=""
-        className="aspect-[16/9] w-full object-cover opacity-90"
+        className="aspect-[16/10] w-full object-cover"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#12181a]/90 via-[#12181a]/35 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#12181a]/88 via-[#12181a]/20 to-transparent" />
 
-      <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-        <div className="mb-3 flex items-center justify-between text-[11px] tracking-wide text-white/60 uppercase">
+      <div className="absolute inset-x-0 bottom-0 p-4">
+        <div className="mb-3 flex items-center justify-between text-[11px] tracking-wide text-white/55 uppercase">
           <span>Live floor</span>
-          <span className="inline-flex items-center gap-1.5 normal-case tracking-normal text-emerald-300">
+          <span className="inline-flex items-center gap-1.5 normal-case tracking-normal text-emerald-300/90">
             <span className="qf-live-dot size-1.5 rounded-full bg-emerald-400" />
             Synced
           </span>
@@ -42,18 +42,17 @@ export function HomeFloorPreview() {
               <div
                 key={ticket.n}
                 className={cn(
-                  'rounded-lg border px-2.5 py-2.5 transition-all duration-500',
+                  'rounded-md border px-2.5 py-2 transition-colors duration-300',
                   highlight
-                    ? 'scale-[1.03] border-teal-300/50 bg-teal-400/15'
+                    ? 'border-white/25 bg-white/15'
                     : 'border-white/10 bg-white/5',
-                  ticket.state === 'serving' && highlight && 'border-emerald-300/60 bg-emerald-400/20',
                 )}
               >
-                <p className="font-display text-xl font-semibold tabular-nums text-white">
+                <p className="font-display text-lg font-semibold tabular-nums text-white">
                   {ticket.n}
                 </p>
                 <p className="truncate text-[11px] text-white/65">{ticket.name}</p>
-                <p className="mt-1 text-[10px] font-medium tracking-wide text-white/45 uppercase">
+                <p className="mt-0.5 text-[10px] tracking-wide text-white/45 uppercase">
                   {ticket.state}
                 </p>
               </div>

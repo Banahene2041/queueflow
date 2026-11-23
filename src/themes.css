@@ -5,6 +5,8 @@
 /* QueueFlow — ink + teal operational theme (shop-floor, not generic SaaS purple) */
 [data-theme='queueflow'] {
   color-scheme: light;
+  /* Soften SDK AuthOverlay scrim to match app dialogs */
+  --ds-auth-backdrop: color-mix(in srgb, #12181a 35%, transparent);
   --color-background: #f3f5f4;
   --color-foreground: #12181a;
   --color-card: #ffffff;
