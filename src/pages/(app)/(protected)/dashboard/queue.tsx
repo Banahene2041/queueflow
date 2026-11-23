@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { QueueBoard } from '@/components/dashboard/QueueBoard'
+import { EmptyShopState } from '@/components/illustrations/EmptyShopState'
 import { buttonVariants } from '@/components/ui'
 import { useMyBusiness } from '@/hooks/useMyBusiness'
 import { cn } from '@/lib/utils'
@@ -27,19 +28,12 @@ export default function DashboardQueuePage() {
       ) : error ? (
         <p className="text-sm text-destructive">{error}</p>
       ) : !business ? (
-        <div className="rounded-lg border border-dashed border-border px-6 py-16 text-center">
-          <p className="font-display text-lg font-semibold">Set up your shop first</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Create a business profile, then guests can join from their phones.
-          </p>
-          <button
-            type="button"
-            className={cn(buttonVariants(), 'mt-5')}
-            onClick={() => navigate('/dashboard/settings')}
-          >
-            Business settings
-          </button>
-        </div>
+        <EmptyShopState
+          title="Set up your shop first"
+          description="Create a business profile, then guests can join from their phones while you run the live queue."
+          actionLabel="Business settings"
+          onAction={() => navigate('/dashboard/settings')}
+        />
       ) : (
         <QueueBoard
           businessId={business.id}

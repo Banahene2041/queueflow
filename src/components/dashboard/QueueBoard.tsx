@@ -97,9 +97,19 @@ export function QueueBoard({
               <div className="h-16 animate-pulse rounded-md bg-muted" />
             </div>
           ) : waiting.length === 0 ? (
-            <p className="px-4 py-16 text-center text-sm text-muted-foreground">
-              No one waiting. Share the public link when walk-ins arrive.
-            </p>
+            <div className="flex flex-col items-center px-6 py-12 text-center">
+              <div className="qf-float relative mb-4 size-20 overflow-hidden rounded-full border border-border bg-muted/50">
+                <img
+                  src="/illustrations/empty-shop.jpg"
+                  alt=""
+                  className="size-full object-cover opacity-90"
+                />
+              </div>
+              <p className="font-display text-sm font-semibold">Floor’s clear</p>
+              <p className="mt-1 max-w-[16rem] text-sm text-muted-foreground">
+                No one waiting. Share the public link when walk-ins arrive.
+              </p>
+            </div>
           ) : (
             <ul>
               {waiting.map((ticket, index) => (

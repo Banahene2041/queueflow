@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useQuery } from 'deepspace'
+import { EmptyShopState } from '@/components/illustrations/EmptyShopState'
 import { buttonVariants } from '@/components/ui'
 import { useMyBusiness } from '@/hooks/useMyBusiness'
 import { cn } from '@/lib/utils'
@@ -55,19 +56,12 @@ export default function DashboardOverviewPage() {
       ) : error ? (
         <p className="text-sm text-destructive">{error}</p>
       ) : !business ? (
-        <div className="rounded-lg border border-dashed border-border px-6 py-16 text-center">
-          <p className="font-display text-lg font-semibold">Create your shop</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            One profile unlocks the public queue link and staff console.
-          </p>
-          <button
-            type="button"
-            className={cn(buttonVariants(), 'mt-5')}
-            onClick={() => navigate('/dashboard/settings')}
-          >
-            Get started
-          </button>
-        </div>
+        <EmptyShopState
+          title="Create your shop"
+          description="One profile unlocks the public queue link and staff console. Guests join from their phone — you run the floor."
+          actionLabel="Get started"
+          onAction={() => navigate('/dashboard/settings')}
+        />
       ) : (
         <>
           <section className="grid gap-3 sm:grid-cols-3">
