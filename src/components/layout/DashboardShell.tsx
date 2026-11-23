@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom'
 import { signOut, useAuthProfileReady } from 'deepspace'
 import {
   Activity,
@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { StaffAuthOverlay } from '@/components/auth/StaffAuthOverlay'
-import { APP_NAME } from '../../constants'
+import { BrandMark } from '@/components/brand/BrandMark'
 import { cn } from '../../lib/utils'
 import {
   Avatar,
@@ -42,10 +42,8 @@ export function DashboardShell() {
     <div className="flex h-full min-h-0 overflow-hidden bg-shell text-foreground">
       <aside className="hidden h-full w-[220px] shrink-0 flex-col border-r border-border bg-shell-panel md:flex">
         <div className="shrink-0 px-5 py-5">
-          <Link to="/dashboard" className="font-display text-lg font-semibold tracking-tight">
-            {APP_NAME}
-          </Link>
-          <p className="mt-1 text-xs text-muted-foreground">Floor console</p>
+          <BrandMark to="/dashboard" size="md" />
+          <p className="mt-2 text-xs text-muted-foreground">Floor console</p>
         </div>
 
         <nav className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-3 pb-3">
@@ -89,9 +87,7 @@ export function DashboardShell() {
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         <div className="flex shrink-0 items-center justify-between border-b border-border bg-shell-panel px-4 py-3 md:hidden">
-          <Link to="/dashboard" className="font-display font-semibold">
-            {APP_NAME}
-          </Link>
+          <BrandMark to="/dashboard" size="sm" />
           {isSignedIn && user ? (
             <AccountMenu
               name={user.name}

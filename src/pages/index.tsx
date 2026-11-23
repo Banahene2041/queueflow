@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 import { Seo } from '../components/Seo'
 import { APP_NAME } from '../constants'
 import { seo } from '../seo'
+import { BrandMark } from '@/components/brand/BrandMark'
 import { LiveTicketPreview } from '@/components/illustrations/LiveTicketPreview'
 import { buttonVariants } from '@/components/ui'
 import { cn } from '@/lib/utils'
@@ -17,10 +18,8 @@ export default function Landing() {
       <Seo {...seo} path="/" />
       <div data-testid="static-landing" className="min-h-screen bg-[#0d1416] text-[#f3f5f4]">
         <header className="absolute inset-x-0 top-0 z-20">
-          <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
-            <Link to="/" className="font-display text-xl font-semibold tracking-tight text-white">
-              {APP_NAME}
-            </Link>
+          <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
+            <BrandMark to="/" tone="inverse" size="md" />
             <Link
               to="/home"
               className={cn(
