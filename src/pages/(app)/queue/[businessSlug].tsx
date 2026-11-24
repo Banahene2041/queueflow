@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { useQuery, toConnectionStatus } from 'deepspace'
+import { useQuery, toConnectionStatus, useR2Files } from 'deepspace'
 import { APP_NAME } from '../../../constants'
 import { JoinQueueModal } from '@/components/forms/JoinQueueModal'
 import { ConnectionBanner } from '../../../components/queue/ConnectionBanner'
@@ -38,6 +38,7 @@ export default function PublicQueuePage() {
   const [loadError, setLoadError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [joinOpen, setJoinOpen] = useState(false)
+  const { getUrl } = useR2Files({ scope: 'app' })
 
   useEffect(() => {
     let cancelled = false
@@ -109,15 +110,22 @@ export default function PublicQueuePage() {
         ) : payload ? (
           <>
             <header className="text-center">
+              {payload.business.logoKey ? (
+                <img
+                  src={getUrl(payload.business.logoKey)}
+                  alt=""
+                  className="mx-auto mb-4 size-16 rounded-md border border-border object-cover"
+                />
+              ) : null}
               <h1 className="font-display text-3xl font-semibold tracking-tight">
                 {payload.business.name}
               </h1>
-              {payload.business.description && (
+              {payload.business.description ? (
                 <p className="mt-2 text-sm text-muted-foreground">{payload.business.description}</p>
-              )}
-              {payload.business.address && (
+              ) : null}
+              {payload.business.address ? (
                 <p className="mt-1 text-sm text-muted-foreground">{payload.business.address}</p>
-              )}
+              ) : null}
             </header>
 
             <ConnectionBanner status={toConnectionStatus(status)} />

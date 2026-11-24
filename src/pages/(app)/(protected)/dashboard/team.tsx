@@ -3,10 +3,18 @@ import { useQuery, useUserLookup } from 'deepspace'
 import { BusinessSettingsModal } from '@/components/forms/BusinessSettingsModal'
 import { InviteStaffModal } from '@/components/forms/InviteStaffModal'
 import { EmptyShopState } from '@/components/illustrations/EmptyShopState'
-import { Button, useToast } from '@/components/ui'
+import {
+  Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  useToast,
+} from '@/components/ui'
 import { useMyBusiness } from '@/hooks/useMyBusiness'
 import { callAction } from '@/lib/actions'
-import type { TeamMember } from '@/types/queue'
+import type { MembershipRole, TeamMember } from '@/types/queue'
 
 export default function DashboardTeamPage() {
   const { success, error } = useToast()
@@ -68,33 +76,65 @@ export default function DashboardTeamPage() {
         </div>
       ) : (
         <ul className="divide-y divide-border rounded-lg border border-border bg-card">
-          {members.map((row) => (
-            <li key={row.recordId} className="flex items-center justify-between gap-3 px-4 py-3">
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium">
-                  {getName(row.data.userId) || row.data.userId}
-                </p>
-                <p className="text-xs capitalize text-muted-foreground">{row.data.role}</p>
-              </div>
-              {isAdmin && row.data.userId !== membership?.userId ? (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="text-destructive"
-                  onClick={() =>
-                    void callAction('removeStaff', {
-                      businessId: business.id,
-                      membershipId: row.recordId,
-                    }).then((r) =>
-                      r.success ? success('Removed') : error('Remove failed', r.error),
-                    )
-                  }
-                >
-                  Remove
-                </Button>
-              ) : null}
-            </li>
-          ))}
+          {members.map((row) => {
+            const isSelf = row.data.userId === membership?.userId
+            return (
+              <li key={row.recordId} className="flex items-center justify-between gap-3 px-4 py-3">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium">
+                    {getName(row.data.userId) || row.data.userId}
+                    {isSelf ? (
+                      <span className="ml-1.5 text-xs font-normal text-muted-foreground">(you)</span>
+                    ) : null}
+                  </p>
+                  {!isAdmin || isSelf ? (
+                    <p className="text-xs capitalize text-muted-foreground">{row.data.role}</p>
+                  ) : null}
+                </div>
+                {isAdmin && !isSelf ? (
+                  <div className="flex shrink-0 items-center gap-2">
+                    <Select
+                      value={row.data.role}
+                      onValueChange={(value) => {
+                        void callAction('updateStaffRole', {
+                          businessId: business.id,
+                          membershipId: row.recordId,
+                          role: value as MembershipRole,
+                        }).then((r) =>
+                          r.success
+                            ? success('Role updated')
+                            : error('Couldn’t update role', r.error),
+                        )
+                      }}
+                    >
+                      <SelectTrigger className="h-8 w-[7.5rem]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="staff">Staff</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-destructive"
+                      onClick={() =>
+                        void callAction('removeStaff', {
+                          businessId: business.id,
+                          membershipId: row.recordId,
+                        }).then((r) =>
+                          r.success ? success('Removed') : error('Remove failed', r.error),
+                        )
+                      }
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ) : null}
+              </li>
+            )
+          })}
         </ul>
       )}
 
