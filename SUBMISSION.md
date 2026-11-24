@@ -7,7 +7,7 @@ Paste/adapt this into the portal writeup. Deadline: **Tue Nov 24, 2026 11:59 PM 
 | Field | Value |
 | --- | --- |
 | **Deployed app URL** | https://queueflow.app.space |
-| **Repository** | DeepSpace cloud repo remote `space` (app `queueflow`). If the portal requires GitHub, mirror this repo to a GitHub URL and paste that. |
+| **Repository** | https://github.com/Banahene2041/queueflow |
 | **Product** | QueueFlow — real-time salon/barbershop queue |
 
 ## What I built
@@ -59,8 +59,6 @@ Other deliberate cuts: one shop per signed-in owner for the demo path; staff inv
 - SMS / push when status → serving
 - Email-based staff invites
 - Multi-chair “now serving” if a shop runs parallel stations
-- Mirror repo to GitHub if the portal requires that host
-
 ## Local verify commands
 
 ```sh
